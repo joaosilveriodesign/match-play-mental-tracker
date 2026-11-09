@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b3d36" />
+    <meta name="description" content="An offline-first courtside tracker for tennis match-play observations." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Mental Tracker" />
+    <title>Match Play Mental Tracker</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand"><span class="brand-ball" aria-hidden="true"></span><div><strong>Match Play</strong><small>Mental Tracker</small></div></div>
+      <div class="header-actions">
+        <span id="connection-status" class="status-pill"><i></i><span>Online</span></span>
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="Use dark theme">☾</button>
+        <button id="help-button" class="icon-button" type="button" aria-label="Open help">?</button>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section id="track-page" class="page is-active" aria-labelledby="track-title">
+        <div class="page-title"><div><p class="eyebrow">Courtside capture</p><h1 id="track-title">Track</h1></div><span id="track-count" class="count-chip">No active session</span></div>
+
+        <article id="session-setup" class="panel setup-panel">
+          <div class="panel-heading"><div><p class="eyebrow">New session</p><h2>Start tracking</h2></div></div>
+          <p class="supporting">Every point is saved locally on this device as soon as you add it.</p>
+          <form id="session-form" class="form-stack">
+            <label><span>Session date</span><input id="session-date" name="date" type="date" required /></label>
+            <label><span>Player identifier <em>Optional</em></span><input name="playerIdentifier" maxlength="80" autocomplete="off" placeholder="Initials or private code" /></label>
+            <label><span>Session type</span><select name="type" required><option>Match Play</option><option>Practice Match</option><option>Tournament</option><option>Other</option></select></label>
+            <label><span>General session notes <em>Optional</em></span><textarea name="notes" rows="3" maxlength="1000" placeholder="Conditions, goals, or context"></textarea></label>
+            <button class="primary-button" type="submit">Start session <span>→</span></button>
+          </form>
+        </article>
+
+        <div id="active-session-area" hidden>
+          <article class="session-strip">
+            <div><span class="live-dot"></span><small>Active session</small><strong id="active-session-name"></strong><span id="active-session-meta"></span></div>
+            <button id="end-session" class="text-button danger-text" type="button">End</button>
+          </article>
+
+          <form id="point-form" class="panel tracker" novalidate>
+            <div class="panel-heading"><div><p id="point-form-kicker" class="eyebrow">New observation</p><h2 id="point-form-title">Record a point</h2></div><button id="cancel-edit" class="text-button" type="button" hidden>Cancel edit</button></div>
+            <p class="perspective-note">All scores are from the player's perspective.</p>
+
+            <fieldset data-field="score"><legend><b>1</b> Score before point</legend><div class="choices four">
+              <label><input type="radio" name="score" value="30–0" /><span>30–0</span></label><label><input type="radio" name="score" value="40–0" /><span>40–0</span></label><label><input type="radio" name="score" value="40–15" /><span>40–15</span></label><label><input type="radio" name="score" value="40–30" /><span>40–30</span></label>
+            </div></fieldset>
+            <fieldset data-field="position"><legend><b>2</b> Player position</legend><div class="choices two">
+              <label><input type="radio" name="position" value="Serving" /><span>Serving</span></label><label><input type="radio" name="position" value="Returning" /><span>Returning</span></label>
+            </div></fieldset>
+            <fieldset data-field="tacticalDecision"><legend><b>3</b> Tactical decision <button class="info-trigger" type="button" data-help="tactics" aria-label="Show tactical decision definitions">i</button></legend><div class="choices two">
+              <label><input type="radio" name="tacticalDecision" value="Clear plan" /><span>Clear plan</span></label><label><input type="radio" name="tacticalDecision" value="Too conservative" /><span>Too conservative</span></label><label><input type="radio" name="tacticalDecision" value="Rushed" /><span>Rushed</span></label><label><input type="radio" name="tacticalDecision" value="Hesitant" /><span>Hesitant</span></label>
+            </div></fieldset>
+            <fieldset data-field="execution"><legend><b>4</b> Execution <button class="info-trigger" type="button" data-help="execution" aria-label="Show execution definitions">i</button></legend><div class="choices stacked">
+              <label><input type="radio" name="execution" value="Committed" /><span>Committed</span></label><label><input type="radio" name="execution" value="Hesitant or slowed down" /><span>Hesitant or slowed down</span></label><label><input type="radio" name="execution" value="Not observable" /><span>Not observable</span></label>
+            </div></fieldset>
+            <fieldset data-field="movement"><legend><b>5</b> Movement &amp; body language <button class="info-trigger" type="button" data-help="movement" aria-label="Show movement definitions">i</button></legend><div class="choices stacked">
+              <label><input type="radio" name="movement" value="Normal" /><span>Normal</span></label><label><input type="radio" name="movement" value="Tense or less active" /><span>Tense or less active</span></label><label><input type="radio" name="movement" value="Not observable" /><span>Not observable</span></label>
+            </div></fieldset>
+            <fieldset data-field="outcome"><legend><b>6</b> Point outcome</legend><div class="choices outcome-options">
+              <label><input type="radio" name="outcome" value="Won" /><span>Won</span></label><label><input type="radio" name="outcome" value="Lost" /><span>Lost</span></label><label id="double-fault-option" class="danger-choice"><input type="radio" name="outcome" value="Double Fault" /><span>Double Fault</span></label>
+            </div><p id="df-position-note" class="field-note">Double Fault is available only while Serving.</p></fieldset>
+            <fieldset id="df-cause-field" data-field="doubleFaultCause" hidden><legend><b>7</b> Double Fault — Likely Cause</legend><p class="field-note">A separate coaching interpretation; it is not inferred from the tactical decision.</p><div class="choices stacked">
+              <label><input type="radio" name="doubleFaultCause" value="Clear plan, poor execution" /><span>Clear plan, poor execution</span></label><label><input type="radio" name="doubleFaultCause" value="Too conservative" /><span>Too conservative</span></label><label><input type="radio" name="doubleFaultCause" value="Rushed" /><span>Rushed</span></label><label><input type="radio" name="doubleFaultCause" value="Hesitant" /><span>Hesitant</span></label><label><input type="radio" name="doubleFaultCause" value="Not observable / Unsure" /><span>Not observable / Unsure</span></label>
+            </div></fieldset>
+            <label class="notes-label"><span><b id="notes-number">7</b> Coaching notes <em>Optional</em></span><textarea name="notes" rows="3" maxlength="1000" placeholder="Short observation or cue"></textarea></label>
+            <p id="form-error" class="form-error" role="alert"></p>
+            <div class="sticky-submit"><button id="add-point" class="primary-button add-point" type="submit">Add point <span>＋</span></button></div>
+          </form>
+
+          <article class="panel recent-panel"><div class="panel-heading"><div><p class="eyebrow">Saved immediately</p><h2>Recent points</h2></div><button id="undo-point" class="text-button" type="button">Undo last</button></div><div id="recent-points" class="point-list"></div></article>
+        </div>
+      </section>
+
+      <section id="statistics-page" class="page" aria-labelledby="statistics-title" hidden>
+        <div class="page-title"><div><p class="eyebrow">Live analysis</p><h1 id="statistics-title">Statistics</h1></div></div>
+        <article class="panel controls-panel"><label><span>Session</span><select id="stats-session"></select></label><div><span class="control-label">Position filter</span><div id="stats-role" class="segmented"><button class="is-selected" data-role="All" type="button">All</button><button data-role="Serving" type="button">Serving</button><button data-role="Returning" type="button">Returning</button></div></div></article>
+        <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Selected sample</p><h2>Overall</h2></div></div><div id="overall-stats" class="stats-grid"></div><p class="sample-warning">Percentages always show their sample size. Small samples do not establish reliable psychological patterns.</p></article>
+        <div id="score-stats" class="score-stats"></div>
+      </section>
+
+      <section id="history-page" class="page" aria-labelledby="history-title" hidden>
+        <div class="page-title"><div><p class="eyebrow">Saved locally</p><h1 id="history-title">History</h1></div></div>
+        <article class="panel filter-panel"><label><span>Score</span><select id="history-score"><option value="All">All scores</option><option>30–0</option><option>40–0</option><option>40–15</option><option>40–30</option></select></label><label><span>Position</span><select id="history-role"><option value="All">All points</option><option>Serving</option><option>Returning</option></select></label></article>
+        <div id="comparison-panel" class="panel comparison-panel" hidden></div>
+        <div id="session-list" class="session-list"></div>
+      </section>
+
+      <section id="reports-page" class="page" aria-labelledby="reports-title" hidden>
+        <div class="page-title"><div><p class="eyebrow">Portable records</p><h1 id="reports-title">Reports</h1></div></div>
+        <article class="privacy-card"><strong>Private by default</strong><p>Records stay in this browser and are never uploaded automatically. They are not synced or backed up unless you export a backup.</p></article>
+        <article class="panel controls-panel"><label><span>Selected session</span><select id="report-session"></select></label></article>
+        <article class="panel action-panel"><div class="panel-heading"><div><p class="eyebrow">Selected session</p><h2>Share and print</h2></div></div><div class="action-grid"><button data-report="copy" type="button"><b>▣</b><span>Copy Records<small>Paste into ChatGPT</small></span></button><button data-report="csv" type="button"><b>↓</b><span>Export CSV<small>Excel / Sheets</small></span></button><button data-report="json" type="button"><b>{ }</b><span>Export JSON<small>Single session</small></span></button><button data-report="print" type="button"><b>▤</b><span>Printable PDF<small>Print or save as PDF</small></span></button></div></article>
+        <article class="panel action-panel"><div class="panel-heading"><div><p class="eyebrow">All local data</p><h2>Backup and restore</h2></div></div><div class="action-grid"><button data-report="backup" type="button"><b>↓</b><span>Full Backup<small>All sessions, JSON</small></span></button><label class="action-upload"><b>↑</b><span>Import Backup<small>Duplicates are skipped</small></span><input id="import-file" type="file" accept="application/json,.json" /></label><button data-report="blank" type="button"><b>□</b><span>Blank Sheet<small>Printable paper form</small></span></button></div></article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Primary navigation">
+      <button class="is-active" data-page="track" type="button"><span>＋</span>Track</button><button data-page="statistics" type="button"><span>▥</span>Statistics</button><button data-page="history" type="button"><span>◷</span>History</button><button data-page="reports" type="button"><span>⇩</span>Reports</button>
+    </nav>
+
+    <dialog id="help-dialog" class="modal"><form method="dialog"><div class="modal-heading"><div><p class="eyebrow">Observation guide</p><h2 id="help-title">Definitions</h2></div><button class="icon-button" value="close" aria-label="Close">×</button></div><div id="help-content"></div><p class="disclaimer">These categories are coaching observations, not psychological diagnoses.</p></form></dialog>
+    <dialog id="session-dialog" class="modal wide-modal"><div class="modal-heading"><div><p class="eyebrow">Session review</p><h2 id="session-dialog-title"></h2></div><button id="close-session-dialog" class="icon-button" type="button" aria-label="Close">×</button></div><div class="dialog-filters"><select id="detail-score"><option value="All">All scores</option><option>30–0</option><option>40–0</option><option>40–15</option><option>40–30</option></select><select id="detail-role"><option value="All">All points</option><option>Serving</option><option>Returning</option></select></div><div id="session-detail"></div></dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="print-root" aria-hidden="true"></div>
+  </body>
+</html>
