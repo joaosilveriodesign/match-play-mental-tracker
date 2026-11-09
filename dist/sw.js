@@ -1,4 +1,4 @@
-const CACHE = "match-play-mental-tracker-202611090104";
+const CACHE = "match-play-mental-tracker-202611090145";
 const SHELL = ["./", "./index.html", "./styles.css", "./manifest.webmanifest", "./js/app.js", "./js/db.js", "./js/stats.js", "./js/exports.js", "./icons/icon-192.png", "./icons/icon-512.png"];
 
 self.addEventListener("install", (event) => {
